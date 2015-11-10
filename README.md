@@ -91,7 +91,7 @@ So far so good - standard stuff. Let's try to break it!
 
 ### Handling changed ip addresses
 
-We now want the HAProxy to get into trouble by restarting our app, but at a changed ip address.
+We now want the HAProxy to get into trouble by restarting our app, and making it available at a changed ip address.
 That's why we're going to stop it and start another container on the `my-network`, so that
 the old ip address will be taken:
 
