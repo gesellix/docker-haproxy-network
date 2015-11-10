@@ -98,7 +98,7 @@ the old ip address will be taken:
     docker stop app
     docker wait app
     docker rm app
-    docker run --rm -dit --name placeholder-app --net mynetwork busybox:latest ping 127.0.0.1
+    docker run -dit --name placeholder-app --net mynetwork busybox:latest ping 127.0.0.1
     
 Then we're going to restart the app again:
 
@@ -106,7 +106,7 @@ Then we're going to restart the app again:
 
 Our app container should now have a changed ip address, we can check that with:
 
-    docker inspect --format '{{ .NetworkSettings.Networks.test.IPAddress }}{{ .Name }}' app proxy placeholder-app 
+    docker inspect --format '{{ .NetworkSettings.Networks.mynetwork.IPAddress }}{{ .Name }}' app proxy placeholder-app 
 
 A HAProxy before version 1.6 would now need to be restarted, because it wouldn't be able
 to connect to the old ip address anymore. Since we already configured our `proxy` to dynamically
