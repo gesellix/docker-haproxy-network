@@ -1,0 +1,14 @@
+{
+  "name": "example-http-server",
+  "version": "1.0.0",
+  "description": "a simple http server serving a simple welcome page",
+  "scripts": {
+    "start": "http-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tobias Gesellchen",
+  "license": "ISC",
+  "dependencies": {
+    "http-server": "^0.8.5"
+  }
+}
