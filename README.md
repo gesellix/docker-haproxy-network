@@ -61,14 +61,14 @@ Now create the example application image:
 
 Then we prepare a private Docker network, so that our containers can connect to it:
 
-    docker network create my-network
+    docker network create mynetwork
     
-Now we only need to run the proxy and the application and connect them to `my-network`.
+Now we only need to run the proxy and the application and connect them to `mynetwork`.
 We might first run them and connect them afterwards, or we can already connect them
 along with the `docker run` command. Let's go with the second option:
 
-    docker run -dit --name app --net my-network app-image
-    docker run -dit --name proxy --net my-network -p 80:80 proxy-image
+    docker run -dit --name app --net mynetwork app-image
+    docker run -dit --name proxy --net mynetwork -p 80:80 proxy-image
 
 Note that we don't expose any port on the `app` container. This is because we don't need
 to when we only want the containers to communicate with each other.
@@ -85,24 +85,24 @@ If everything works fine, you should see the classic _hello world_.
 
 You can check the current container ip addresses with
 
-    docker inspect --format '{{ .NetworkSettings.Networks.test.IPAddress }}{{ .Name }}' app proxy
+    docker inspect --format '{{ .NetworkSettings.Networks.mynetwork.IPAddress }}{{ .Name }}' app proxy
 
 So far so good - standard stuff. Let's try to break it!
 
 ### Handling changed ip addresses
 
 We now want the HAProxy to get into trouble by restarting our app, and making it available at a changed ip address.
-That's why we're going to stop it and start another container on the `my-network`, so that
+That's why we're going to stop it and start another container on the `mynetwork`, so that
 the old ip address will be taken:
 
     docker stop app
     docker wait app
     docker rm app
-    docker run --rm -dit --name placeholder-app --net my-network busybox:latest ping 127.0.0.1
+    docker run --rm -dit --name placeholder-app --net mynetwork busybox:latest ping 127.0.0.1
     
 Then we're going to restart the app again:
 
-    docker run -dit --name app --net my-network app-image
+    docker run -dit --name app --net mynetwork app-image
 
 Our app container should now have a changed ip address, we can check that with:
 
