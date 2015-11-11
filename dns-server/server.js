@@ -20,21 +20,23 @@
             if (err) {
                 console.error(err.message)
             }
-            lines.forEach(function (line) {
-                console.log(line)
-            });
+            //lines.forEach(function (line) {
+            //    console.log(line)
+            //});
 
             var match = _.find(lines,function(line){
-                console.log(line);
-                return line[0] == request.question[0].name;
+                //console.log(line);
+                return line[1] == request.question[0].name;
             });
             console.log("--> ", match);
 
-            response.answer.push(dns.A({
-                name: request.question[0].name,
-                address: _.first(match),
-                ttl: 600
-            }));
+            if (match) {
+                response.answer.push(dns.A({
+                    name: request.question[0].name,
+                    address: _.first(match),
+                    ttl: 600
+                }));
+            }
             response.send();
         });
     });
