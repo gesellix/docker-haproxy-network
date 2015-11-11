@@ -31,7 +31,7 @@ on every container restart: normally, you wouldn't have the same ip address afte
 stopping and starting a container. Obviously, this applies not only to Docker containers,
 but to every environment where servers are dynamically changed.
 
-The new HAProxy release allows you to configure a simple dnsmasq nameserver,
+The new HAProxy release allows you to configure a dns nameserver,
 which effectively will be asked for an ip address when an old ip address
 can't be connected to anymore. The [HAProxy 1.6 announcement](http://blog.haproxy.com/2015/10/14/whats-new-in-haproxy-1-6/)
 shows a nice example, which we're going to use in this demo.
@@ -54,25 +54,34 @@ Now create the example application image:
 
     docker build -t app-image -f http-server/Dockerfile http-server
     
-... and the HAProxy image:
+... then the HAProxy image:
 
     docker build -t proxy-image -f haproxy/Dockerfile haproxy
+    
+... and finally a simple dns server:
+
+    docker build -t dns-image -f dns-server/Dockerfile dns-server
 
 
 Then we prepare a private Docker network, so that our containers can connect to it:
 
     docker network create mynetwork
     
-Now we only need to run the proxy and the application and connect them to `mynetwork`.
+Now we only need to run the proxy with a dns server and the application, and connect them to `mynetwork`.
 We might first run them and connect them afterwards, or we can already connect them
 along with the `docker run` command. Let's go with the second option:
 
+    #docker run -dit --name dns --net mynetwork quay.io/jpillora/dnsmasq-gui:latest
+    docker run -dit --name dns --net mynetwork dns-image
+    DNS_IP=$(docker inspect --format '{{ .NetworkSettings.Networks.mynetwork.IPAddress }}' dns)
     docker run -dit --name app --net mynetwork app-image
-    docker run -dit --name proxy --net mynetwork -p 80:80 proxy-image
+    docker run -dit --name proxy --net mynetwork --dns $DNS_IP -p 80:80 --dns-search mynetwork proxy-image
 
 Note that we don't expose any port on the `app` container. This is because we don't need
 to when we only want the containers to communicate with each other.
 We want the proxy HTTP port to be exposed on our public interface, though.
+The proxy is being configured with a special dns server, so that name resolution at runtime
+will query a specific server which is aware of the existing ip addresses in `mynetwork`.
 
 ### Hello World
 
@@ -98,7 +107,7 @@ the old ip address will be taken:
     docker stop app
     docker wait app
     docker rm app
-    docker run -dit --name placeholder-app --net mynetwork busybox:latest ping 127.0.0.1
+    docker run -dit --name placeholder-app --net mynetwork busybox:latest sh -c "ping 127.0.0.1 > /dev/null"
     
 Then we're going to restart the app again:
 
@@ -118,4 +127,3 @@ You can verify that by refreshing your browser. Do it. And smile :smile:
 
 Does it work for you? Do you need more details or did I tell something wrong?
 You can contact me here at the issue tracker or via Twitter [@gesellix](https://twitter.com/gesellix)!
-
