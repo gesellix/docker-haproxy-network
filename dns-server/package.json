@@ -1,0 +1,16 @@
+{
+  "name": "dns-server",
+  "version": "1.0.0",
+  "description": "a simple http server serving a simple welcome page",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tobias Gesellchen",
+  "license": "ISC",
+  "dependencies": {
+    "hostile": "^1.0.2",
+    "lodash": "^3.10.1",
+    "native-dns": "^0.7.0"
+  }
+}
