@@ -1,3 +1,7 @@
+# Work In Progress
+
+---
+
 # Docker networking and DNS resolution with HAProxy
 
 This little demo shows how to:
