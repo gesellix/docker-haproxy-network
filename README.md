@@ -58,27 +58,31 @@ Now create the example application image:
 
     docker build -t proxy-image -f haproxy/Dockerfile haproxy
 
-... and finally a simple dns server:
+We also need a dns server, which maps container names to container ips. Such a
+dns server can be implemented in different ways.
+I chose to create a very simple dns server which only reads from the
+local `/etc/hosts` file. Since Docker automagically updates
+that file when any container is added or removed from the network, we only need
+the dns server to be part of the observed network. Long story short, here's how
+the simple dns-server can be built:
 
     docker build -t dns-image -f dns-server/Dockerfile dns-server
 
 
 Then we prepare a private Docker network, so that our containers can connect to it:
 
-    docker network create --subnet=10.10.10.0/30 dns
     docker network create mynetwork
 
 Now we only need to run the proxy with a dns server and the application, and connect them to `mynetwork`.
 We might first run them and connect them afterwards, or we can already connect them
-along with the `docker run` command. Let's go with the second option:
+along with the `docker run` command. Let's go with the second option. Please note that
+the dns server should have a static ip address in your production environment:
 
-    docker run -dit --name dns --net dns dns-image
-    docker network connect mynetwork dns
+    docker run -dit --name dns --net mynetwork dns-image
     DNS_IP=$(docker inspect --format '{{ .NetworkSettings.Networks.mynetwork.IPAddress }}' dns)
     DNS_PORT=53
     docker run -dit --name app --net mynetwork app-image
     docker run -dit --name proxy --net mynetwork -p 80:80 -e DNS_TCP_ADDR=$DNS_IP -e DNS_TCP_PORT=$DNS_PORT proxy-image
-    docker inspect --format '{{ .NetworkSettings.Networks.mynetwork.IPAddress }}{{ .Name }}' app proxy
 
 Note that we don't expose any port on the `app` container. This is because we don't need
 to when we only want the containers to communicate with each other.
