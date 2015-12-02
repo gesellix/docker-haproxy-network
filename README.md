@@ -36,6 +36,9 @@ which effectively will be asked for an ip address when an old ip address
 can't be connected to anymore. The [HAProxy 1.6 announcement](http://blog.haproxy.com/2015/10/14/whats-new-in-haproxy-1-6/)
 shows a nice example, which we're going to use in this demo.
 
+**Edit**: another example for the new HAProxy 1.6 dns resolution, but using the old Docker `--link`
+has been described at the official HAProxy blog: [HAProxy and container ip changes in docker](http://goo.gl/6mhP9o).
+
 
 ## Try this at home
 
