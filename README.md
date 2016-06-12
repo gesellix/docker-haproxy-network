@@ -78,6 +78,13 @@ along with the `docker run` command. Let's go with the second option. Please not
 the dns server at `127.0.0.11` is the current default for every Docker container. Let's hope that the ip address won't
 change across future Docker releases. If so, we can still fallback to reading the `/etc/resolv.conf`.
 
+    docker run -dit --name app --net mynetwork app-image
+    docker run -dit --name proxy --net mynetwork -p 80:80 proxy-image
+
+The proxy-image image used above is already configured to use Docker's internal dns server. If you prefer to use your own
+dns server, you can override the default like follows. Please note that ip addresses are resolved from inside the Docker
+container so that e.g. `127.0.0.1` doesn't resolve to your host's ip address.
+
     DNS_IP=127.0.0.11
     DNS_PORT=53
     docker run -dit --name app --net mynetwork app-image
@@ -92,8 +99,8 @@ The proxy will use Docker's embedded DNS server for container name resolution in
 
 Both containers should be running in the background now and you can check if the setup
 is working by navigating your browser to the Docker daemon host. When using native Linux
-this is most probably at [http://localhost:80](http://localhost:80/), for Windows and Mac OS
-users with Docker Machine it should be [http://192.168.99.100:80](http://192.168.99.100:80/).
+or the Docker for Mac beta this is most probably at [http://localhost:80](http://localhost:80/), while
+for Windows and Mac OS users with Docker Machine it should be [http://192.168.99.100:80](http://192.168.99.100:80/).
 
 If everything works fine, you should see the classic _hello world_.
 
@@ -125,6 +132,10 @@ to connect to the old ip address anymore. Since we already configured our `proxy
 resolve changed ip addresses, everything should still work.
 
 You can verify that by refreshing your browser. Do it. And smile :smile:
+
+## Alternatives
+
+- Similar [demo for Nginx](https://github.com/taiidani/docker-nginx-reverse-proxy)
 
 ## Questions, Suggestions, Anything?
 
