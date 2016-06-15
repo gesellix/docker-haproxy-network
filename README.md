@@ -5,6 +5,8 @@ This little demo shows how to:
 - create a private Docker network for a reverse proxy and a backend application
 - leverage the new HAProxy name resolution to reflect a changed backend ip address
 
+_**Note**: with the current release 1.6.5 the dns resolver seems to be broken (as of 2016-06-15)_
+
 
 ## Docker networking
 
